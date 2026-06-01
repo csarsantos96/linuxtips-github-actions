@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  giropops:
+  giropops-2:
     runs-on: ubuntu-latest
     steps:
       - name: Confere versao do ubuntu
