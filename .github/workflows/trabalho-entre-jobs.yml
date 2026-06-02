@@ -18,7 +18,7 @@ jobs:
   job_2:
     runs-on: ubuntu-latest
     steps:
-      - name: Acessar arquivo mensagem
+      - name: Ver o conteudo do diretorio
         run: ls -lha
       
       - name: Acessar arquivo mensagem
