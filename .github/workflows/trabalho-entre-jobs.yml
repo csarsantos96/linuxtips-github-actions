@@ -1,4 +1,4 @@
-name: Vendos arquivos compartilhados entre steps
+name: Criando terceiro arquivo
 
 on:
   push:
