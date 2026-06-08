@@ -1,0 +1,31 @@
+name: Primeiro desafio 
+
+on:
+  workflow_dispatch:
+    inputs:
+      imagem_docker:
+        description: 'Digite o nome e a tag da imagem Docker'
+        required: true
+        default: 'alpine:latest'
+        type: string
+
+jobs:
+  docker-image:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Docker
+        uses: actions/checkout@v4
+      
+      - name: Baixar imagem Docker
+        run: docker pull ${{inputs.imagem_docker}}
+      
+      - name: Listar imagens Docker
+        run: docker images
+
+      - name: Analizar vulnerabilidade com Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ${{inputs.imagem_docker}}
+          summary: true
