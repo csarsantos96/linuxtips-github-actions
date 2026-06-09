@@ -105,6 +105,48 @@ Key concepts:
 
 ---
 
+### 5. Challenge 1 — `primeiro-desafio.yml`
+
+**Trigger:** manual (`workflow_dispatch`)
+
+**Branch:** `primeiro-desafio`
+
+The first hands-on challenge of the course. The goal was to build a manually triggered workflow that accepts a Docker image name as input, pulls it on the runner, lists the local images to confirm the pull, and runs a vulnerability scan with Docker Scout.
+
+**Required input:**
+
+| Field | Description | Default |
+| ----- | ----------- | ------- |
+| `imagem_docker` | Name and tag of the Docker image to test (e.g. `alpine:latest`) | `alpine:latest` |
+
+| Step | What it does |
+| ---- | ------------ |
+| Checkout | Checks out the repository on the runner |
+| Docker Hub login | Authenticates with Docker Hub using `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets |
+| Pull Docker image | Runs `docker pull` with the image provided via input |
+| List Docker images | Runs `docker images` to confirm the pull succeeded |
+| Vulnerability scan with Docker Scout | Uses the `docker/scout-action@v1` action to scan the image and print the CVE report to the logs |
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      imagem_docker:
+        description: 'Enter the Docker image name and tag'
+        required: true
+        default: 'alpine:latest'
+        type: string
+```
+
+Key concepts:
+
+- **`workflow_dispatch`** — manual trigger that runs the workflow from the GitHub Actions UI without requiring a push or pull request event.
+- **`inputs`** — input fields defined under `workflow_dispatch`; the value typed by the user is available throughout the workflow via `${{ inputs.imagem_docker }}`.
+- **Secrets** — sensitive credentials (Docker Hub username and token) stored as repository secrets and never hardcoded in the YAML.
+- **`docker/scout-action`** — Docker's official action for CVE vulnerability analysis, integrated directly as a step inside the job.
+
+---
+
 ## Key Concepts Covered
 
 - **Workflow file** — a YAML file under `.github/workflows/` that defines automation
