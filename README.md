@@ -17,7 +17,7 @@ No local tooling is required — all workflows run on GitHub-hosted runners.
 
 ### 1. First Workflow — `meu-primeiro-workflow.yml`
 
-**Trigger:** push to `main`
+**Trigger:** manual (`workflow_dispatch`)
 
 Introduces the basic anatomy of a workflow: events, jobs, runners, and steps.
 
@@ -157,6 +157,44 @@ Key concepts:
 - **`run`** — executes a shell command on the runner
 - **`needs`** — enforces job ordering by declaring dependencies between jobs
 - **Artifacts** — files uploaded by one job and downloaded by another, bridging the isolation between runners
+
+## Triggers
+
+A **trigger** is the event configured under `on:` that tells GitHub when to run a workflow. This repo uses two of them:
+
+| Trigger | Used in | Fires when |
+| ------- | ------- | ---------- |
+| `push` | `trabalho-entre-steps.yml`, `trabalho-entre-jobs.yml`, `trabalho-entre-jobs-2.yml` | A commit is pushed to the `main` branch |
+| `workflow_dispatch` | `meu-primeiro-workflow.yml`, `primeiro-desafio.yml` | Someone manually runs the workflow from the **Actions** tab (optionally with `inputs`) |
+
+```yaml
+# push — runs automatically on every commit to main
+on:
+  push:
+    branches:
+      - main
+
+# workflow_dispatch — runs only when triggered manually, with optional inputs
+on:
+  workflow_dispatch:
+    inputs:
+      imagem_docker:
+        description: 'Enter the Docker image name and tag'
+        required: true
+        default: 'alpine:latest'
+        type: string
+```
+
+Other common triggers not used in this repo, for reference:
+
+| Trigger | Fires when |
+| ------- | ---------- |
+| `pull_request` | A PR is opened, synchronized, or reopened against a target branch |
+| `schedule` | On a cron schedule (e.g. `cron: '0 3 * * *'`) |
+| `release` | A release is published/created/edited |
+| `workflow_call` | The workflow is invoked by another workflow (reusable workflows) |
+
+A workflow can also combine multiple triggers under the same `on:` key (e.g. `push` **and** `workflow_dispatch`), so it can run automatically and still be launched manually when needed.
 
 ## Git Flow & Repository Practices
 
