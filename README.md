@@ -232,6 +232,33 @@ These rules live under the repository settings and don't require any code change
 
 Once configured, GitHub automatically blocks merges on the protected branch until the required reviews and checks are satisfied — the same checks that show up as ✅/❌ on every pull request in this repo.
 
+### Using CODEOWNERS
+
+A **CODEOWNERS** file tells GitHub which individuals or teams are responsible for specific paths in the repository. When a pull request touches a path that has an owner, GitHub automatically requests a review from that owner — removing the need to manually pick reviewers on every PR.
+
+How it works:
+
+1. Create a `CODEOWNERS` file in one of these locations: the repository root, `.github/CODEOWNERS`, or `docs/CODEOWNERS`.
+2. Each line maps a file pattern to one or more owners (a GitHub username or team, prefixed with `@`):
+
+```text
+# Default owner for everything in the repo
+*                       @csarsantos96
+
+# Only this user can be requested for workflow changes
+/.github/workflows/     @csarsantos96
+
+# A team owns everything under /docs
+/docs/                  @my-org/docs-team
+```
+
+1. Patterns follow the same syntax as `.gitignore` and are matched top-to-bottom, with the **last matching pattern** taking precedence.
+
+Why it matters together with branch protection:
+
+- Combine it with **"Require a pull request before merging"** and **"Require approvals"**, then enable **"Require review from Code Owners"** on the protected branch. This forces every PR touching an owned path to get sign-off from the right person or team before it can be merged.
+- Keeps review responsibility explicit and discoverable — anyone can open `CODEOWNERS` and see who to ping for a given part of the codebase, instead of relying on tribal knowledge.
+
 ## Course
 
 [LinuxTips — Criando Pipelines e Automações com Github Actions](https://linuxtips.io)
