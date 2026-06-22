@@ -158,6 +158,83 @@ Key concepts:
 - **`needs`** — enforces job ordering by declaring dependencies between jobs
 - **Artifacts** — files uploaded by one job and downloaded by another, bridging the isolation between runners
 
+## Git Flow & Repository Practices
+
+Beyond the workflow files themselves, this repository follows a few baseline Git practices that go hand-in-hand with CI/CD: a lightweight Git Flow branching model, pull requests for every change, and branch protection rules on the main branches.
+
+### Git Flow
+
+This repo uses a simplified version of the **Git Flow** branching model:
+
+| Branch | Purpose |
+| ------ | ------- |
+| `main` | Always reflects stable, reviewed code. Protected — no direct pushes. |
+| `develop` | Integration branch where finished features land before going to `main`. |
+| `feature/*` | Short-lived branches for new work (e.g. `feature/primeiro-desafio`). Branched off `develop`, merged back via pull request, then deleted. |
+
+Typical flow for a change:
+
+1. Branch off: `git checkout -b feature/my-change develop`
+2. Commit small, focused changes with clear messages.
+3. Push the branch and open a pull request targeting `develop` (or `main` for hotfixes).
+4. After review and passing checks, merge and delete the branch.
+
+This keeps `main` stable, makes history easier to follow, and gives every change a place — the PR — to be reviewed and discussed before it lands.
+
+### Understanding Pull Requests
+
+A **pull request (PR)** is a request to merge changes from one branch into another. It's not just a "merge button" — it's the unit of code review:
+
+- **Diff view** — shows exactly what changed, file by file.
+- **Discussion thread** — reviewers can comment on specific lines or the PR as a whole.
+- **Checks** — any CI workflows triggered by `pull_request` (tests, linting, vulnerability scans, etc.) run automatically and report status directly on the PR.
+- **Merge methods** — GitHub offers three ways to bring a PR in:
+  - **Merge commit** — keeps full history and adds a merge commit (used in this repo).
+  - **Squash and merge** — collapses all PR commits into one, keeping the target branch history linear.
+  - **Rebase and merge** — replays commits on top of the target branch without a merge commit.
+
+**Best practices:**
+
+- Keep PRs small and focused on a single concern — easier to review, easier to revert.
+- Write a descriptive title and summary: what changed and why, not just what.
+- Reference the related branch or issue (e.g. `feature/primeiro-desafio` → "Challenge 1").
+- Let CI checks finish before merging — don't merge against a red or pending status.
+- Delete the branch after merging to keep the branch list clean.
+
+### Branch Protection Rules
+
+**Branch protection rules** are settings GitHub lets you apply to specific branches (typically `main` and `develop`) to enforce quality gates before code lands there. They prevent force-pushes, accidental deletions, and merges that skip review or CI.
+
+Common rules and what they do:
+
+| Rule | Effect |
+| ---- | ------ |
+| Require a pull request before merging | Blocks direct pushes — all changes must go through a PR. |
+| Require approvals | A PR needs at least N approving reviews before it can be merged. |
+| Require status checks to pass | A PR can't be merged until selected CI workflows (e.g. a GitHub Actions job) succeed. |
+| Require branches to be up to date before merging | Forces the PR branch to be in sync with the latest target branch before merging, avoiding "it passed CI but broke after merge." |
+| Require conversation resolution | All review comments must be marked resolved before merging. |
+| Restrict who can push | Limits direct push access to specific people or teams. |
+| Block force pushes / branch deletion | Protects branch history from being rewritten or removed. |
+
+### Configuring Branch Protection on GitHub
+
+These rules live under the repository settings and don't require any code changes:
+
+1. Go to **Settings → Branches** (or **Settings → Rules → Rulesets** on newer GitHub UIs).
+2. Under **Branch protection rules**, click **Add rule** (or **Add branch ruleset**).
+3. Set the branch name pattern to protect (e.g. `main`, `develop`).
+4. Enable the checks that fit the project, for example:
+   - "Require a pull request before merging", with a minimum number of approvals.
+   - "Require status checks to pass before merging" → select the relevant job(s) from the workflows defined in `.github/workflows/`.
+   - "Do not allow bypassing the above settings" to apply the rule to administrators as well.
+5. Save the rule.
+
+Once configured, GitHub automatically blocks merges on the protected branch until the required reviews and checks are satisfied — the same checks that show up as ✅/❌ on every pull request in this repo.
+
 ## Course
 
 [LinuxTips — Criando Pipelines e Automações com Github Actions](https://linuxtips.io)
+
+[[LinuxTips — Creating Pipelines and Automations with GitHub Actions](https://linuxtips.io)
+]
