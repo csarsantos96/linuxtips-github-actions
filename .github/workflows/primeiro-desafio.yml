@@ -1,4 +1,4 @@
-name: Primeiro desafio 
+name: Desafio 01
 
 on:
   workflow_dispatch:
