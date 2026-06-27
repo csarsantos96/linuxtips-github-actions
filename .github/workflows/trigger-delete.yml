@@ -1,0 +1,10 @@
+name: Testando o trigger do tipo delete
+on:
+  delete
+jobs:
+  print-modification:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Aviso sobre remoção de branch ou tag
+        run: echo "Uma branch ou tag foi deletada do seu  repositório"
