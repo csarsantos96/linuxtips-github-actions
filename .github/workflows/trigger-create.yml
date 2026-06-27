@@ -6,5 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Avisa a modificacao
-        run: echo "Este workflow foi trigado, pois uma regra de Branch Protection rule foi adicionada"
+      - name: Aviso sobre criação da branch ou tag
+        run: Uma nova branch ou tag foi criada no repositório
