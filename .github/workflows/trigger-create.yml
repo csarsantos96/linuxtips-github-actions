@@ -1,9 +1,6 @@
-name: Testando a regra de Protection rule
-
+name: Testando o trigger do tipo create
 on:
-  branch_protection_rule:
-    types: [created, edited, deleted]
-
+  create
 jobs:
   print-modification:
     runs-on: ubuntu-latest
