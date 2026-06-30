@@ -1,7 +1,7 @@
 name: trigger-create
 
 on:
-  create
+  create:
 
 jobs:
   print-modification:
