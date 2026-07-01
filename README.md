@@ -147,6 +147,41 @@ Key concepts:
 
 ---
 
+### 6. Deployment Trigger — `trigger-deployment.yml`
+
+**Trigger:** `deployment`
+
+Shows how to react to a deployment event created via the GitHub API (or by another workflow/integration) instead of a `push` or manual dispatch.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jobs-deployment | Print Deployment | Runs `echo` to confirm the job was triggered by an external deployment event |
+
+```yaml
+on:
+  deployment:
+```
+
+---
+
+### 7. Discussion Trigger — `trigger-discussion.yml`
+
+**Trigger:** `discussion` (`created`, `edited`, `answered`)
+
+Reacts to activity on GitHub Discussions, useful for automations like notifying a channel or applying labels when a discussion is created, edited, or marked as answered.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jobs-discussion | Print discussion | Runs `echo` to confirm the job was triggered by a created/edited/answered discussion |
+
+```yaml
+on:
+  discussion:
+    types: [created, edited, answered]
+```
+
+---
+
 ## Key Concepts Covered
 
 - **Workflow file** — a YAML file under `.github/workflows/` that defines automation
@@ -160,12 +195,14 @@ Key concepts:
 
 ## Triggers
 
-A **trigger** is the event configured under `on:` that tells GitHub when to run a workflow. This repo uses two of them:
+A **trigger** is the event configured under `on:` that tells GitHub when to run a workflow. This repo uses four of them:
 
 | Trigger | Used in | Fires when |
 | ------- | ------- | ---------- |
 | `push` | `trabalho-entre-steps.yml`, `trabalho-entre-jobs.yml`, `trabalho-entre-jobs-2.yml` | A commit is pushed to the `main` branch |
 | `workflow_dispatch` | `meu-primeiro-workflow.yml`, `primeiro-desafio.yml` | Someone manually runs the workflow from the **Actions** tab (optionally with `inputs`) |
+| `deployment` | `trigger-deployment.yml` | A deployment is created (via the GitHub API or another workflow) |
+| `discussion` | `trigger-discussion.yml` | A discussion is created, edited, or answered (configurable via `types`) |
 
 ```yaml
 # push — runs automatically on every commit to main
@@ -183,6 +220,15 @@ on:
         required: true
         default: 'alpine:latest'
         type: string
+
+# deployment — runs when a deployment event is created
+on:
+  deployment:
+
+# discussion — runs on discussion activity, scoped to specific types
+on:
+  discussion:
+    types: [created, edited, answered]
 ```
 
 Other common triggers not used in this repo, for reference:
