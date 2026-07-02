@@ -1,4 +1,4 @@
-name: Criando nosso trigger issue 
+name: Criando nosso trigger pull_request 
 
 on:
   issues:
