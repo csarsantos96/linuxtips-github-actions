@@ -13,7 +13,84 @@ This repository contains hands-on workflow examples built throughout the course.
 
 No local tooling is required — all workflows run on GitHub-hosted runners.
 
-## Workflows
+## Repository Structure
+
+| Path | Purpose |
+| ---- | ------- |
+| `.github/workflows/` | Active workflows currently wired up to run on this repo |
+| `dias-anteriores/` | Earlier course workflows, kept as a reference/archive after being superseded |
+| `iac/iac.tf` | Placeholder Terraform file used to exercise the `**.tf` path filter in `trigger-push.yml` |
+| `app/app.js` | Placeholder application file used to exercise generic push/PR triggers |
+| `CODEOWNERS` | Maps repository paths to responsible reviewers |
+
+## Active Workflows (`.github/workflows/`)
+
+### `trigger-issue.yml`
+
+**Trigger:** `issues` (`opened`, `edited`, `deleted`)
+
+Reacts to activity on GitHub Issues.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jopb-issue | Printa issue | Runs `echo` to confirm the job was triggered by an opened/edited/deleted issue |
+
+```yaml
+on:
+  issues:
+    types: [opened, edited, deleted]
+```
+
+---
+
+### `trigger-pull_reuqest.yml`
+
+**Trigger:** `pull_request` (`opened`, `edited`, `closed`, `reopened`), scoped to `main`-like branches
+
+Reacts to pull request activity targeting `main`, `main*`, or `main/**`.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jobs-pull-request | Printa pull_request | Runs `echo` to confirm the job was triggered by a PR event |
+
+```yaml
+on:
+  pull_request:
+    types: [opened, edited, closed, reopened]
+    branches:
+      - 'main'
+      - 'main*'
+      - 'main/** '
+```
+
+---
+
+### `trigger-push.yml`
+
+**Trigger:** `pull_request` targeting `main`/`testes`/`main/**`, filtered to Terraform file changes
+
+Despite the filename, this workflow listens for pull requests and only fires when the changed files match `**.tf` — a common pattern for gating infrastructure reviews to only run when Terraform code actually changes.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jobs-push | Printa push | Runs `echo` to confirm a Terraform file (e.g. `iac/iac.tf`) was touched in the PR |
+
+```yaml
+on:
+  pull_request:
+    branches:
+      - 'main'
+      - 'testes'
+      - 'main/** '
+    paths:
+      - '**.tf'
+```
+
+Key concept: **`paths`** narrows a trigger so the workflow only runs when files matching the given glob are part of the change — useful for skipping CI on unrelated edits.
+
+## Archived Workflows (`dias-anteriores/`)
+
+These are earlier exercises from the course, migrated out of `.github/workflows/` once superseded by the active workflows above. They're kept for reference.
 
 ### 1. First Workflow — `meu-primeiro-workflow.yml`
 
@@ -182,6 +259,57 @@ on:
 
 ---
 
+### 8. Branch/Tag Create Trigger — `trigger-create.yml` & `branch-protection-rule.yml`
+
+**Trigger:** `create`
+
+Two near-identical workflows (the second is a leftover from a rename) that fire whenever a branch or tag is created in the repository.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| print-modification | Aviso sobre criação da branch ou tag | Runs `echo` to confirm a branch or tag was created |
+
+```yaml
+on:
+  create:
+```
+
+---
+
+### 9. Branch/Tag Delete Trigger — `trigger-delete.yml`
+
+**Trigger:** `delete`
+
+The counterpart to workflow 8 — fires whenever a branch or tag is deleted.
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| print-modification | Aviso sobre remoção de branch ou tag | Runs `echo` to confirm a branch or tag was deleted |
+
+```yaml
+on:
+  delete:
+```
+
+---
+
+### 10. Wiki Trigger — `trigger-gollum.yml`
+
+**Trigger:** `gollum`
+
+Fires whenever a page in the repository's Wiki is created or updated (`gollum` is the GitHub event name for Wiki changes).
+
+| Job | Step | What it does |
+| --- | ---- | ------------ |
+| jobs-gollum | Printa gollum | Runs `echo` to confirm a Wiki page was changed |
+
+```yaml
+on:
+  gollum:
+```
+
+---
+
 ## Key Concepts Covered
 
 - **Workflow file** — a YAML file under `.github/workflows/` that defines automation
@@ -195,16 +323,35 @@ on:
 
 ## Triggers
 
-A **trigger** is the event configured under `on:` that tells GitHub when to run a workflow. This repo uses four of them:
+A **trigger** is the event configured under `on:` that tells GitHub when to run a workflow. Active workflows in `.github/workflows/` currently use `issues` and `pull_request`; the archived workflows in `dias-anteriores/` exercise several more:
 
 | Trigger | Used in | Fires when |
 | ------- | ------- | ---------- |
-| `push` | `trabalho-entre-steps.yml`, `trabalho-entre-jobs.yml`, `trabalho-entre-jobs-2.yml` | A commit is pushed to the `main` branch |
-| `workflow_dispatch` | `meu-primeiro-workflow.yml`, `primeiro-desafio.yml` | Someone manually runs the workflow from the **Actions** tab (optionally with `inputs`) |
-| `deployment` | `trigger-deployment.yml` | A deployment is created (via the GitHub API or another workflow) |
-| `discussion` | `trigger-discussion.yml` | A discussion is created, edited, or answered (configurable via `types`) |
+| `issues` | `trigger-issue.yml` | An issue is opened, edited, or deleted |
+| `pull_request` | `trigger-pull_reuqest.yml`, `trigger-push.yml` | A PR targeting `main`-like branches is opened/edited/closed/reopened (optionally filtered by changed `paths`) |
+| `push` | `trabalho-entre-steps.yml`, `trabalho-entre-jobs.yml`, `trabalho-entre-jobs-2.yml` (archived) | A commit is pushed to the `main` branch |
+| `workflow_dispatch` | `meu-primeiro-workflow.yml`, `primeiro-desafio.yml` (archived) | Someone manually runs the workflow from the **Actions** tab (optionally with `inputs`) |
+| `deployment` | `trigger-deployment.yml` (archived) | A deployment is created (via the GitHub API or another workflow) |
+| `discussion` | `trigger-discussion.yml` (archived) | A discussion is created, edited, or answered (configurable via `types`) |
+| `create` | `trigger-create.yml`, `branch-protection-rule.yml` (archived) | A branch or tag is created |
+| `delete` | `trigger-delete.yml` (archived) | A branch or tag is deleted |
+| `gollum` | `trigger-gollum.yml` (archived) | A Wiki page is created or edited |
 
 ```yaml
+# issues — runs when an issue is opened, edited, or deleted
+on:
+  issues:
+    types: [opened, edited, deleted]
+
+# pull_request — runs on PR activity, optionally scoped by branch and changed paths
+on:
+  pull_request:
+    types: [opened, edited, closed, reopened]
+    branches:
+      - main
+    paths:
+      - '**.tf'
+
 # push — runs automatically on every commit to main
 on:
   push:
@@ -235,7 +382,6 @@ Other common triggers not used in this repo, for reference:
 
 | Trigger | Fires when |
 | ------- | ---------- |
-| `pull_request` | A PR is opened, synchronized, or reopened against a target branch |
 | `schedule` | On a cron schedule (e.g. `cron: '0 3 * * *'`) |
 | `release` | A release is published/created/edited |
 | `workflow_call` | The workflow is invoked by another workflow (reusable workflows) |
@@ -346,8 +492,3 @@ Why it matters together with branch protection:
 ## Course
 
 [LinuxTips — Criando Pipelines e Automações com Github Actions](https://linuxtips.io)
-
-[[LinuxTips — Creating Pipelines and Automations with GitHub Actions](https://linuxtips.io)
-]
-
-BRANCH STAGING TESTANDO O DELETE.
