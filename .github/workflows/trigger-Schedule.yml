@@ -1,7 +1,7 @@
 name: Criando nosso trigger Schedule
 on:
   schedule:
-    - cron: '30 14 * * 4'
+    - cron: '41 14 * * 4'
 
 jobs:
   executa-schedule:
