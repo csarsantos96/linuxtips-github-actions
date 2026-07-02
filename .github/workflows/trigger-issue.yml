@@ -1,0 +1,12 @@
+name: Criando nosso trigger issue 
+
+on:
+  issues:
+    types: [opened, edited, deleted]
+
+jobs:
+  jopb-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Printa issue
+        run: echo "Uma issue foi aberta/editada/deletada"
