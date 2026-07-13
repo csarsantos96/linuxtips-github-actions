@@ -7,5 +7,8 @@ jobs:
     steps:
       - name: Dump Github context
         env:
-          GITHUB_CONTEXT: ${{toJson(github)}}
-        run: echo "$GITHUB_CONTEXT"
+          PROPRIETARIO: ${{ github.repository_owner }}
+          SHA_COMMIT: ${{ github.sha }}
+        run: |
+          echo "Proprietário do Repositório: $PROPRIETARIO"
+          echo "SHA do Commit: $SHA_COMMIT"
