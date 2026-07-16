@@ -6,8 +6,13 @@ on:
 jobs:
   testa_terraform:
     runs-on: ubuntu-latest
+
+    env:
+      TERRAFORM_VERSION: ${{ secrets.TERRAFORM_VERSION }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
 
       - name: Modifica o binário
         run: chmod +x ./scripts/valida-tf.sh
